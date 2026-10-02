@@ -1,0 +1,8 @@
+.DS_Store
+/.build/
+/build/
+/dist/
+*.xcodeproj/xcuserdata/
+.swiftpm/
+# local planning notes stay private until scrubbed
+/docs/private/
