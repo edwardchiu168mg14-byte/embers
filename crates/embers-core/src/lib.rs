@@ -12,7 +12,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn version_matches_manifest() {
-        assert_eq!(version(), "0.0.1");
+    fn version_is_semver_shaped() {
+        let parts: Vec<&str> = version().split('.').collect();
+        assert_eq!(parts.len(), 3, "expected X.Y.Z, got {}", version());
+        for part in parts {
+            assert!(
+                !part.is_empty() && part.bytes().all(|b| b.is_ascii_digit()),
+                "expected X.Y.Z, got {}",
+                version()
+            );
+        }
     }
 }

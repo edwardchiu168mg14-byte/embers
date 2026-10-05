@@ -56,6 +56,7 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.24.3
 
   macos-build:
     runs-on: macos-latest
@@ -67,6 +68,12 @@ jobs:
         run: bash apps/macos/build.sh
       - name: Verify ad-hoc signature
         run: codesign -dv build/Embers.app 2>&1 | grep -q 'Signature=adhoc'
+      - name: Verify universal binary (arm64 + x86_64)
+        run: |
+          archs="$(lipo -archs build/Embers.app/Contents/MacOS/Embers)"
+          echo "archs: $archs"
+          case " $archs " in *" arm64 "*) ;; *) echo "missing arm64 slice"; exit 1;; esac
+          case " $archs " in *" x86_64 "*) ;; *) echo "missing x86_64 slice"; exit 1;; esac
       - name: Smoke launch (must stay alive 1s, then quit on SIGTERM)
         run: |
           ./build/Embers.app/Contents/MacOS/Embers & pid=$!

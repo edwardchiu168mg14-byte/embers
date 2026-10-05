@@ -15,7 +15,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Install pinned toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+      # Manual pin: Dependabot cannot see this version. Review and bump it at every release (rule S12).
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked
+        run: cargo install cargo-audit --version 0.22.2 --locked
       - name: Audit
         run: cargo audit
