@@ -1,8 +1,19 @@
 .DS_Store
-/.build/
+/target/
 /build/
 /dist/
-*.xcodeproj/xcuserdata/
+node_modules/
 .swiftpm/
-# local planning notes stay private until scrubbed
+*.xcodeproj/xcuserdata/
+
+# secrets — never commit (rule S13)
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.mobileprovision
+
+# local-only notes
 /docs/private/

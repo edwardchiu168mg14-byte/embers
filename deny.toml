@@ -1,0 +1,43 @@
+# cargo-deny policy — see docs/ARCHITECTURE_DECISION.md rule S2.
+
+[graph]
+all-features = true
+
+[advisories]
+# Vulnerabilities are always errors; also fail on unmaintained and yanked crates.
+unmaintained = "all"
+yanked = "deny"
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "MPL-2.0",
+]
+confidence-threshold = 0.93
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Our own unpublished path crates (publish = false) are not real wildcards.
+allow-wildcard-paths = true
+# Network stacks are not allowed anywhere in the graph (rule S7/S9).
+deny = [
+    { crate = "reqwest" },
+    { crate = "hyper" },
+    { crate = "openssl" },
+    { crate = "openssl-sys" },
+    { crate = "native-tls" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
