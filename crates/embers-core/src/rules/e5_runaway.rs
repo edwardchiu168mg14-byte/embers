@@ -31,9 +31,6 @@ pub fn hit(ctx: &Context, p: &Proc) -> Option<Hit> {
         facts.push(reason::cpu(c));
     }
     facts.push(format!("running {}", reason::duration(ctx.age_ms(p))));
-    if p.is_system_path {
-        facts.push("part of the system — Embers will not end it, quit it yourself".to_string());
-    }
     Some(Hit {
         root: p.pid,
         pids: vec![p.pid],

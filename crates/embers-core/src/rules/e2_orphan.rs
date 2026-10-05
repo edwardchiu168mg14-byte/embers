@@ -25,7 +25,7 @@ pub fn hit(ctx: &Context, p: &Proc) -> Option<Hit> {
         confidence: Confidence::High,
         action: Action::Terminate,
         idle_secs: None,
-        hint: Some(cmd),
+        hint: Some(super::command_hint(p)),
         facts,
     })
 }

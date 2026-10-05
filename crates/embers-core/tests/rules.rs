@@ -20,6 +20,9 @@ struct ExpectedEmber {
     categories: Vec<String>,
     confidence: String,
     action: String,
+    /// When given, the ember's pids must be exactly this set.
+    #[serde(default)]
+    pids: Option<Vec<Pid>>,
 }
 
 fn path(name: &str) -> PathBuf {
@@ -44,6 +47,7 @@ fn summary(e: &Ember) -> ExpectedEmber {
         categories: e.categories.iter().map(|c| s(c)).collect(),
         confidence: s(&e.confidence),
         action: s(&e.action),
+        pids: None,
     }
 }
 
@@ -66,8 +70,20 @@ fn check(name: &str) -> Vec<Ember> {
         std::fs::read_to_string(path(&format!("{name}.expected.json"))).expect("expected file");
     let expected: Expected = serde_json::from_str(&text).expect("expected json");
 
+    for want in &expected.embers {
+        if let Some(pids) = &want.pids {
+            let e = embers.iter().find(|e| e.root_pid == want.root_pid);
+            let mut got = e.map(|e| e.pids.clone()).unwrap_or_default();
+            got.sort_unstable();
+            assert_eq!(&got, pids, "{name}: pids of ember {} differ", want.root_pid);
+        }
+    }
     let got: HashSet<ExpectedEmber> = embers.iter().map(summary).collect();
-    let want: HashSet<ExpectedEmber> = expected.embers.into_iter().collect();
+    let want: HashSet<ExpectedEmber> = expected
+        .embers
+        .into_iter()
+        .map(|e| ExpectedEmber { pids: None, ..e })
+        .collect();
     assert_eq!(got, want, "{name}: embers differ\n{embers:#?}");
 
     for e in embers.iter().filter(|e| e.action != Action::Inform) {
@@ -220,9 +236,120 @@ fn cpu_hog_needs_a_long_enough_window() {
 }
 
 #[test]
-fn whole_fixture_directory_loads() {
+fn every_fixture_matches_its_expectation() {
     let files = fixture::list(&path("")).unwrap();
-    assert_eq!(files.len(), 12);
+    assert_eq!(files.len(), 27);
+    for file in files {
+        let name = file.file_stem().unwrap().to_str().unwrap().to_string();
+        check(&name);
+    }
+}
+
+// Phase 1a round 1 — protection covers whole subtrees (F1), process groups only when safe (F6).
+
+#[test]
+fn allowlisted_server_keeps_its_worker() {
+    check("a1_allowlisted_child_grandchild");
+}
+
+#[test]
+fn busy_nested_session_keeps_its_helper() {
+    check("a2_nested_busy_session");
+}
+
+#[test]
+fn frontmost_app_keeps_its_children() {
+    check("a3c_frontmost_descendant");
+}
+
+#[test]
+fn other_users_process_keeps_its_children() {
+    check("a7_notowned");
+}
+
+#[test]
+fn protected_system_process_keeps_its_children() {
+    check("a16_linux_sysd");
+}
+
+#[test]
+fn unrelated_group_member_blocks_group_kill() {
+    check("a3b_pgid_unrelated");
+}
+
+#[test]
+fn pgid_zero_never_group_killed() {
+    check("a13_pgid0");
+}
+
+#[test]
+fn protected_group_leader_blocks_group_kill() {
+    check("a19_leader_tty");
+    check("a19b_leader_frontmost");
+}
+
+#[test]
+fn allowlisted_memory_hog_never_shown() {
+    check("allowlisted_memory_hog");
+}
+
+// F5 — a system binary is never offered for ending, whatever the rules say.
+#[test]
+fn system_path_process_is_inform_only() {
+    let embers = check("a9_syspath_e2_e5");
+    assert!(embers[0].reason.contains("Embers will not end it"));
+    check("a9b_syspath_e2");
+}
+
+// S1 — a session status older than the process is ignored.
+#[test]
+fn stale_session_state_is_ignored() {
+    check("a17_stale_state_new_proc");
+}
+
+// F7 — host-supplied hint fields are redacted, capped and quoted.
+#[test]
+fn hint_fields_are_redacted_capped_and_quoted() {
+    let mut fx = load("a18_hint_fields");
+    fx.hosts.sessions[0].cwd = Some(format!(
+        "/work/api_key=SECRETCWD1/{}",
+        "d".repeat(5_000_000)
+    ));
+    let embers = run(&fx);
+    let hint = embers[0].recovery_hint.as_deref().unwrap();
+    assert!(hint.len() <= 2048, "hint is {} bytes", hint.len());
+    assert!(
+        !hint.contains("SECRETCWD1") && !hint.contains("SECRETSID1"),
+        "{hint}"
+    );
+    assert!(
+        hint.contains("--resume '"),
+        "session id with spaces must be quoted: {hint}"
+    );
+}
+
+#[test]
+fn joined_command_hint_is_capped() {
+    let mut fx = load("orphan_http_server");
+    let p = fx.cur.procs.iter_mut().find(|p| p.pid == 1200).unwrap();
+    p.argv = std::iter::once("python3".to_string())
+        .chain((0..3000).map(|_| "b".repeat(2000)))
+        .collect();
+    let embers = run(&fx);
+    assert!(embers[0].recovery_hint.as_ref().unwrap().len() <= 2048);
+}
+
+// F10 — the reason is never empty.
+#[test]
+fn many_ports_still_give_a_reason() {
+    let embers = check("a10_e3_manyports");
+    assert!(
+        embers[0]
+            .reason
+            .starts_with("listening on 40 ports (5000, 5001, 5002, …)"),
+        "{}",
+        embers[0].reason
+    );
 }
 
 #[test]

@@ -16,6 +16,7 @@ use crate::model::{
 use crate::origin::{self, MAX_DEPTH};
 use crate::protect::is_protected;
 use crate::reason;
+use crate::redact::{cap_field, redact_text, MAX_FIELD_BYTES};
 
 /// Everything a rule may look at, precomputed once per `classify` call.
 pub struct Context<'a> {
@@ -112,7 +113,44 @@ impl<'a> Context<'a> {
             .iter()
             .filter_map(|p| is_protected(p, cfg, &ctx).map(|r| (p.pid, r)))
             .collect();
+        ctx.protected = ctx.with_inherited_protection();
         ctx
+    }
+
+    /// Protection covers a whole subtree: a process below one that is protected for a
+    /// reason tied to *that* process (frontmost app, busy session, another user's process,
+    /// Embers itself, an allow-list rule) inherits the same reason. OS roots (kernel,
+    /// launchd/explorer/systemd) and interactive shells do not pass protection down —
+    /// every process descends from them, and a runaway job in the user's own terminal
+    /// must stay endable.
+    fn with_inherited_protection(&self) -> HashMap<Pid, ProtectReason> {
+        let inheritable = |r: &ProtectReason| {
+            !matches!(
+                r,
+                ProtectReason::Kernel | ProtectReason::SystemDaemon | ProtectReason::LiveTty
+            )
+        };
+        let mut out = self.protected.clone();
+        for p in &self.cur.procs {
+            if out.contains_key(&p.pid) {
+                continue;
+            }
+            let mut cur = p.ppid.filter(|pp| *pp != p.pid);
+            for _ in 0..MAX_DEPTH {
+                let Some(parent) = cur.and_then(|pp| self.procs.get(&pp)) else {
+                    break;
+                };
+                if parent.pid == p.pid {
+                    break;
+                }
+                if let Some(reason) = self.protected.get(&parent.pid).filter(|r| inheritable(r)) {
+                    out.insert(p.pid, reason.clone());
+                    break;
+                }
+                cur = parent.ppid.filter(|pp| *pp != parent.pid);
+            }
+        }
+        out
     }
 
     pub fn protection(&self, pid: Pid) -> Option<&ProtectReason> {
@@ -147,14 +185,17 @@ impl<'a> Context<'a> {
         pids.iter().map(|p| self.cpu_pct(*p)).sum()
     }
 
-    /// All descendants of `pid` (not including `pid`), breadth-first.
+    /// Unprotected descendants of `pid` (not including `pid`), breadth-first.
+    ///
+    /// Protection covers a whole subtree: the walk never enters a protected process, so
+    /// nothing below it (its helpers, workers, children) is ever returned.
     pub fn descendants(&self, pid: Pid) -> Vec<Pid> {
         let mut out = Vec::new();
         let mut seen = HashSet::from([pid]);
         let mut queue = VecDeque::from([pid]);
         while let Some(next) = queue.pop_front() {
             for child in self.children.get(&next).into_iter().flatten() {
-                if seen.insert(*child) {
+                if !self.protected.contains_key(child) && seen.insert(*child) {
                     out.push(*child);
                     queue.push_back(*child);
                 }
@@ -163,12 +204,56 @@ impl<'a> Context<'a> {
         out
     }
 
-    /// `pid` plus its descendants, minus anything protected.
+    /// `pid` plus its unprotected descendants (see [`Context::descendants`]).
     pub fn tree(&self, pid: Pid) -> Vec<Pid> {
-        std::iter::once(pid)
-            .chain(self.descendants(pid))
-            .filter(|p| *p == pid || !self.protected.contains_key(p))
-            .collect()
+        std::iter::once(pid).chain(self.descendants(pid)).collect()
+    }
+
+    /// The process group of session `root`, if it may be ended as one unit.
+    ///
+    /// Valid only when all hold (tech-lead decision, phase 1a round 1):
+    /// 1. `pgid > 1` (0 would mean "the caller's own group" to `killpg`);
+    /// 2. the group leader (`pid == pgid`) exists and is `root` or an ancestor of `root`
+    ///    inside the same session tree — the leader is not an app bundle, not a system
+    ///    binary, and not protected;
+    /// 3. no process between the leader and `root` is protected;
+    /// 4. every member of the group lies in the leader's protection-truncated subtree;
+    /// 5. no member is protected.
+    ///
+    /// Returns the leader's truncated subtree (which then equals the group's members plus
+    /// any descendants), so the leader is included even though it is `root`'s parent.
+    pub fn session_group(&self, root: Pid) -> Option<Vec<Pid>> {
+        let pgid = self.procs.get(&root)?.pgid.filter(|g| *g > 1)?;
+        let leader = self.procs.get(&pgid)?;
+        if leader.is_app_bundle || leader.is_system_path || self.protected.contains_key(&pgid) {
+            return None;
+        }
+        let mut cur = root;
+        for _ in 0..MAX_DEPTH {
+            if cur == pgid {
+                break;
+            }
+            if cur != root && self.protected.contains_key(&cur) {
+                return None;
+            }
+            cur = self.procs.get(&cur)?.ppid.filter(|pp| *pp != cur)?;
+        }
+        if cur != pgid {
+            return None;
+        }
+        let subtree: HashSet<Pid> = self.tree(pgid).into_iter().collect();
+        let members_ok = self
+            .cur
+            .procs
+            .iter()
+            .filter(|q| q.pgid == Some(pgid))
+            .all(|q| subtree.contains(&q.pid) && !self.protected.contains_key(&q.pid));
+        if !members_ok {
+            return None;
+        }
+        let mut pids: Vec<Pid> = subtree.into_iter().collect();
+        pids.sort_unstable();
+        Some(pids)
     }
 
     /// The parent is gone: no valid parent, or (macOS) adopted by launchd while not
@@ -254,11 +339,17 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
                 return None;
             }
             group.sort_by_key(|h| h.category);
-            let first = &group[0];
             let mut pids: Vec<Pid> = group.iter().flat_map(|h| h.pids.iter().copied()).collect();
             pids.sort_unstable();
             pids.dedup();
-            let facts: Vec<String> = group.iter().flat_map(|h| h.facts.iter().cloned()).collect();
+            // Why there is no "End" button comes first, so it survives the length cap.
+            let system_note = p.is_system_path.then(|| {
+                "part of the system — Embers will not end it, quit it yourself".to_string()
+            });
+            let facts: Vec<String> = system_note
+                .into_iter()
+                .chain(group.iter().flat_map(|h| h.facts.iter().cloned()))
+                .collect();
             let mut listeners: Vec<u16> = pids
                 .iter()
                 .filter_map(|pid| ctx.procs.get(pid))
@@ -266,9 +357,19 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
                 .collect();
             listeners.sort_unstable();
             listeners.dedup();
+            // Most conservative action wins; a system binary is never offered for ending.
+            let action = if protected.is_some() || p.is_system_path {
+                Action::Inform
+            } else {
+                group
+                    .iter()
+                    .map(|h| h.action)
+                    .max_by_key(|a| caution(*a))
+                    .unwrap_or(Action::Inform)
+            };
             Some(Ember {
                 id: format!("{root}-{}", p.start_time_ms),
-                name: p.name().to_string(),
+                name: cap_field(&redact_text(p.name()), MAX_FIELD_BYTES),
                 root_pid: root,
                 categories: group.iter().map(|h| h.category).collect(),
                 origin: ctx.origins.get(&root).copied().unwrap_or(Origin::Unknown),
@@ -290,12 +391,11 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
                     helper_count: u32::try_from(pids.len().saturating_sub(1)).unwrap_or(u32::MAX),
                     listeners,
                 },
-                action: if protected.is_some() {
-                    Action::Inform
-                } else {
-                    first.action
-                },
-                recovery_hint: group.iter().find_map(|h| h.hint.clone()),
+                action,
+                recovery_hint: group
+                    .iter()
+                    .find_map(|h| h.hint.as_deref())
+                    .map(|h| cap_field(&redact_text(h), MAX_FIELD_BYTES)),
                 pids,
                 protected,
             })
@@ -321,9 +421,28 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
 
 /// `"listening :8765"` style facts for a process's open server ports.
 fn listening(p: &Proc) -> Vec<String> {
-    if p.listeners.is_empty() {
-        return Vec::new();
+    let ports: Vec<String> = p.listeners.iter().map(|l| l.to_string()).collect();
+    match ports.len() {
+        0 => Vec::new(),
+        1..=4 => vec![format!("listening :{}", ports.join(" :"))],
+        n => vec![format!(
+            "listening on {n} ports ({}, …)",
+            ports[..3].join(", ")
+        )],
     }
-    let ports: Vec<String> = p.listeners.iter().map(|l| format!(":{l}")).collect();
-    vec![format!("listening {}", ports.join(" "))]
+}
+
+/// How cautious an action is; merging keeps the most cautious one.
+fn caution(action: Action) -> u8 {
+    match action {
+        Action::TerminateGroup => 0,
+        Action::Terminate => 1,
+        Action::QuitApp => 2,
+        Action::Inform => 3,
+    }
+}
+
+/// A process's command line as a copy-pasteable hint: redacted, then capped.
+fn command_hint(p: &Proc) -> String {
+    cap_field(&redact_text(&p.command_line()), MAX_FIELD_BYTES)
 }

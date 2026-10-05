@@ -1,0 +1,207 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 900,
+        "ppid": 1,
+        "start_time_ms": 1799971200000,
+        "uid": 501,
+        "exe": "/Applications/Claude.app/Contents/MacOS/Claude",
+        "is_app_bundle": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1000,
+        "ppid": 900,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "-zsh"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000,
+        "has_tty": true
+      },
+      {
+        "pid": 1001,
+        "ppid": 1000,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/claude-code/2.1.286/claude.app/Contents/MacOS/claude",
+        "argv": [
+          "/opt/claude-code/2.1.286/claude.app/Contents/MacOS/claude",
+          "--output-format",
+          "stream-json",
+          "--verbose"
+        ],
+        "pgid": 1000,
+        "footprint_bytes": 83886080,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1002,
+        "ppid": 1001,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/node/bin/npm",
+        "argv": [
+          "npm",
+          "exec",
+          "better-icons",
+          "mcp"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1003,
+        "ppid": 1002,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/node/bin/node",
+        "argv": [
+          "node",
+          "/opt/npx-cache/better-icons/bin/better-icons",
+          "mcp"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1004,
+        "ppid": 1001,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/pencil/mcp/mcp-server-darwin-arm64",
+        "argv": [
+          "mcp-server-darwin-arm64",
+          "--app",
+          "editor"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 900,
+        "ppid": 1,
+        "start_time_ms": 1799971200000,
+        "uid": 501,
+        "exe": "/Applications/Claude.app/Contents/MacOS/Claude",
+        "is_app_bundle": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1000,
+        "ppid": 900,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "-zsh"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000,
+        "has_tty": true
+      },
+      {
+        "pid": 1001,
+        "ppid": 1000,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/claude-code/2.1.286/claude.app/Contents/MacOS/claude",
+        "argv": [
+          "/opt/claude-code/2.1.286/claude.app/Contents/MacOS/claude",
+          "--output-format",
+          "stream-json",
+          "--verbose"
+        ],
+        "pgid": 1000,
+        "footprint_bytes": 83886080,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1002,
+        "ppid": 1001,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/node/bin/npm",
+        "argv": [
+          "npm",
+          "exec",
+          "better-icons",
+          "mcp"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1003,
+        "ppid": 1002,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/node/bin/node",
+        "argv": [
+          "node",
+          "/opt/npx-cache/better-icons/bin/better-icons",
+          "mcp"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1004,
+        "ppid": 1001,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/pencil/mcp/mcp-server-darwin-arm64",
+        "argv": [
+          "mcp-server-darwin-arm64",
+          "--app",
+          "editor"
+        ],
+        "pgid": 1000,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "hosts": {
+    "sessions": [
+      {
+        "pid": 1001,
+        "status": "Idle",
+        "status_since_ms": 1799992800000,
+        "session_id": "sess-1111",
+        "cwd": "/tmp/project-a"
+      }
+    ]
+  }
+}

@@ -62,5 +62,7 @@ names_linux = ["systemd", "init", "kthreadd", "Xorg", "Xwayland", "gnome-shell",
 path_prefixes_macos = ["/System/Library/", "/usr/libexec/", "/usr/sbin/", "/sbin/", "/Library/Apple/"]
 path_prefixes_windows = ['C:\Windows\System32\', 'C:\Windows\SysWOW64\']
 path_prefixes_linux = ["/usr/lib/systemd/", "/lib/systemd/", "/usr/sbin/", "/sbin/"]
-# Shell names: a shell attached to a live terminal is never touched.
+# Shell names: a shell attached to a live terminal is never touched; also used to
+# recognise polling loops. Setting `shells` in your config REPLACES this list (it does
+# not add to it) — copy these entries if you only want to add one.
 shells = ["bash", "zsh", "sh", "dash", "fish", "tcsh", "ksh", "pwsh", "pwsh.exe", "powershell.exe", "cmd.exe", "bash.exe"]

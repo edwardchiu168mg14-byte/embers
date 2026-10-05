@@ -1,18 +1,15 @@
 {
   "embers": [
     {
-      "root_pid": 1001,
+      "root_pid": 700,
       "categories": [
-        "IdleSession"
+        "Orphan",
+        "IdleServer"
       ],
       "confidence": "High",
-      "action": "TerminateGroup",
+      "action": "Inform",
       "pids": [
-        1000,
-        1001,
-        1002,
-        1003,
-        1004
+        700
       ]
     }
   ],

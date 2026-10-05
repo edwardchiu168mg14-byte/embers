@@ -1,15 +1,14 @@
 {
   "embers": [
     {
-      "root_pid": 1400,
+      "root_pid": 1301,
       "categories": [
-        "Loop"
+        "IdleServer"
       ],
       "confidence": "Medium",
       "action": "Terminate",
       "pids": [
-        1400,
-        1401
+        1301
       ]
     }
   ],

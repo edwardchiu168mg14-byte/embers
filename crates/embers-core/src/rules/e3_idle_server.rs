@@ -29,7 +29,7 @@ pub fn hit(ctx: &Context, p: &Proc, e1_roots: &HashSet<Pid>) -> Option<Hit> {
         confidence: Confidence::Medium,
         action: Action::Terminate,
         idle_secs: None,
-        hint: Some(p.command_line()),
+        hint: Some(super::command_hint(p)),
         facts,
     })
 }

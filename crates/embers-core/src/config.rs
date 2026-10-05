@@ -36,6 +36,8 @@ pub struct Config {
     pub dev_tool_patterns: Vec<Regex>,
     pub protected: ProtectedLists,
     pub allowlist: Vec<AllowRule>,
+    /// Non-fatal problems a front-end should show (e.g. an emptied protection list).
+    pub warnings: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -157,7 +159,7 @@ fn build(table: toml::Table) -> Result<Config, ConfigError> {
             return Err(ConfigError::NotPositive(name));
         }
     }
-    if raw.hog_cpu_pct.is_nan() || raw.hog_cpu_pct <= 0.0 {
+    if !raw.hog_cpu_pct.is_finite() || raw.hog_cpu_pct <= 0.0 {
         return Err(ConfigError::NotPositive("hog_cpu_pct"));
     }
 
@@ -202,8 +204,26 @@ fn build(table: toml::Table) -> Result<Config, ConfigError> {
         })
         .collect::<Result<_, ConfigError>>()?;
 
+    let lists = &raw.protected;
+    let warnings = [
+        ("names_macos", &lists.names_macos),
+        ("names_windows", &lists.names_windows),
+        ("names_linux", &lists.names_linux),
+        ("path_prefixes_macos", &lists.path_prefixes_macos),
+        ("path_prefixes_windows", &lists.path_prefixes_windows),
+        ("path_prefixes_linux", &lists.path_prefixes_linux),
+        ("shells", &lists.shells),
+    ]
+    .into_iter()
+    .filter(|(_, list)| list.is_empty())
+    .map(|(name, _)| {
+        format!("[protected] {name} is empty: Embers will not protect anything by that rule")
+    })
+    .collect();
+
     Ok(Config {
         source: table,
+        warnings,
         idle_minutes: raw.idle_minutes,
         window_minutes: raw.window_minutes,
         hog_memory_bytes: raw.hog_memory_bytes,

@@ -12,16 +12,26 @@ pub fn sentence(facts: &[String]) -> String {
             continue;
         }
         seen.push(fact);
-        let piece = if out.is_empty() {
-            fact.clone()
-        } else {
-            format!("{SEP}{fact}")
-        };
+        if out.is_empty() {
+            // The first fact always appears, shortened if it alone is too long.
+            out = truncate_chars(fact, MAX_REASON_CHARS);
+            continue;
+        }
+        let piece = format!("{SEP}{fact}");
         if out.chars().count() + piece.chars().count() > MAX_REASON_CHARS {
             break;
         }
         out.push_str(&piece);
     }
+    out
+}
+
+fn truncate_chars(text: &str, max: usize) -> String {
+    if text.chars().count() <= max {
+        return text.to_string();
+    }
+    let mut out: String = text.chars().take(max.saturating_sub(1)).collect();
+    out.push('…');
     out
 }
 

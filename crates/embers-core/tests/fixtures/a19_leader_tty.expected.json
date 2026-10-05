@@ -6,9 +6,8 @@
         "IdleSession"
       ],
       "confidence": "High",
-      "action": "TerminateGroup",
+      "action": "Terminate",
       "pids": [
-        1000,
         1001,
         1002,
         1003,
@@ -17,6 +16,7 @@
     }
   ],
   "protected_pids": [
-    1
+    1,
+    1000
   ]
 }

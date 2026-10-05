@@ -65,3 +65,22 @@ fn bad_regex_is_an_error_not_a_panic() {
 fn origin_without_pattern_is_rejected() {
     assert!(merge(load_defaults(), "[[origins]]\norigin = \"Terminal\"").is_err());
 }
+
+#[test]
+fn infinite_threshold_is_an_error() {
+    assert!(matches!(
+        merge(load_defaults(), "hog_cpu_pct = inf"),
+        Err(ConfigError::NotPositive("hog_cpu_pct"))
+    ));
+}
+
+#[test]
+fn emptied_protection_list_warns() {
+    assert!(load_defaults().warnings.is_empty());
+    let cfg = merge(load_defaults(), "[protected]\nnames_macos = []").unwrap();
+    assert!(
+        cfg.warnings.iter().any(|w| w.contains("names_macos")),
+        "{:?}",
+        cfg.warnings
+    );
+}
