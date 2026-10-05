@@ -1,0 +1,16 @@
+{
+  "embers": [
+    {
+      "root_pid": 1701,
+      "categories": [
+        "Orphan"
+      ],
+      "confidence": "High",
+      "action": "Terminate"
+    }
+  ],
+  "protected_pids": [
+    1,
+    1700
+  ]
+}

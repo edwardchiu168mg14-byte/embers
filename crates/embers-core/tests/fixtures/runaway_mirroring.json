@@ -1,0 +1,96 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 0,
+        "ppid": null,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "kernel_task",
+        "is_system_path": true,
+        "footprint_bytes": 67108864,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 300,
+        "ppid": 1,
+        "start_time_ms": 1799989200000,
+        "uid": 88,
+        "exe": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer",
+        "is_system_path": true,
+        "footprint_bytes": 629145600,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1500,
+        "ppid": 1,
+        "start_time_ms": 1799978400000,
+        "uid": 501,
+        "exe": "/System/Applications/iPhone Mirroring.app/Contents/MacOS/iPhone Mirroring",
+        "is_app_bundle": true,
+        "is_system_path": true,
+        "footprint_bytes": 32212254720,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 0,
+        "ppid": null,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "kernel_task",
+        "is_system_path": true,
+        "footprint_bytes": 67108864,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 300,
+        "ppid": 1,
+        "start_time_ms": 1799989200000,
+        "uid": 88,
+        "exe": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer",
+        "is_system_path": true,
+        "footprint_bytes": 629145600,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1500,
+        "ppid": 1,
+        "start_time_ms": 1799978400000,
+        "uid": 501,
+        "exe": "/System/Applications/iPhone Mirroring.app/Contents/MacOS/iPhone Mirroring",
+        "is_app_bundle": true,
+        "is_system_path": true,
+        "footprint_bytes": 32212254720,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  }
+}

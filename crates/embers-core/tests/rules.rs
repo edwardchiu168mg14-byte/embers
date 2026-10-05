@@ -1,0 +1,246 @@
+//! Fixture-driven tests of the rule engine. `*.expected.json` beside each fixture is the spec.
+
+use std::collections::HashSet;
+use std::path::PathBuf;
+
+use embers_core::fixture::{self, Fixture};
+use embers_core::rules::Context;
+use embers_core::{classify, Action, Ember, Pid, ProtectReason};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Expected {
+    embers: Vec<ExpectedEmber>,
+    protected_pids: Vec<Pid>,
+}
+
+#[derive(Deserialize, Debug, PartialEq, Eq, Hash)]
+struct ExpectedEmber {
+    root_pid: Pid,
+    categories: Vec<String>,
+    confidence: String,
+    action: String,
+}
+
+fn path(name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(name)
+}
+
+fn load(name: &str) -> Fixture {
+    fixture::load(&path(&format!("{name}.json"))).expect("fixture loads")
+}
+
+fn run(fx: &Fixture) -> Vec<Ember> {
+    let cfg = fixture::config_for(fx).expect("fixture config is valid");
+    classify(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts)
+}
+
+fn summary(e: &Ember) -> ExpectedEmber {
+    let s = |v: &dyn erased::Debugish| v.text();
+    ExpectedEmber {
+        root_pid: e.root_pid,
+        categories: e.categories.iter().map(|c| s(c)).collect(),
+        confidence: s(&e.confidence),
+        action: s(&e.action),
+    }
+}
+
+mod erased {
+    pub trait Debugish {
+        fn text(&self) -> String;
+    }
+    impl<T: std::fmt::Debug> Debugish for T {
+        fn text(&self) -> String {
+            format!("{self:?}")
+        }
+    }
+}
+
+/// Runs a fixture and checks it against its `.expected.json`; returns the embers.
+fn check(name: &str) -> Vec<Ember> {
+    let fx = load(name);
+    let embers = run(&fx);
+    let text =
+        std::fs::read_to_string(path(&format!("{name}.expected.json"))).expect("expected file");
+    let expected: Expected = serde_json::from_str(&text).expect("expected json");
+
+    let got: HashSet<ExpectedEmber> = embers.iter().map(summary).collect();
+    let want: HashSet<ExpectedEmber> = expected.embers.into_iter().collect();
+    assert_eq!(got, want, "{name}: embers differ\n{embers:#?}");
+
+    for e in embers.iter().filter(|e| e.action != Action::Inform) {
+        for pid in &expected.protected_pids {
+            assert!(
+                !e.pids.contains(pid),
+                "{name}: protected pid {pid} is in actionable ember {}",
+                e.id
+            );
+        }
+        assert!(
+            e.protected.is_none(),
+            "{name}: actionable ember {} is marked protected",
+            e.id
+        );
+    }
+    embers
+}
+
+#[test]
+fn claude_desktop_idle_ends_whole_session_group() {
+    let embers = check("claude_desktop_idle");
+    let e = &embers[0];
+    assert_eq!(e.pids, vec![1000, 1001, 1002, 1003, 1004]);
+    assert!(e.reason.contains("idle"), "{}", e.reason);
+    assert!(e.reason.contains("host says idle"), "{}", e.reason);
+    assert!(e
+        .recovery_hint
+        .as_deref()
+        .unwrap_or_default()
+        .contains("--resume sess-1111"));
+    assert_eq!(e.id, "1001-1799989200000");
+}
+
+#[test]
+fn claude_desktop_busy_is_protected() {
+    check("claude_desktop_busy");
+    let fx = load("claude_desktop_busy");
+    let cfg = fixture::config_for(&fx).unwrap();
+    let ctx = Context::new(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts);
+    assert_eq!(ctx.protection(1001), Some(&ProtectReason::BusySession));
+}
+
+#[test]
+fn recently_idle_session_is_still_protected() {
+    let mut fx = load("claude_desktop_idle");
+    fx.hosts.sessions[0].status_since_ms = Some(fx.cur.taken_at_ms - 60_000);
+    assert!(run(&fx).is_empty());
+}
+
+#[test]
+fn claude_cli_without_host_file_is_medium() {
+    let embers = check("claude_cli_no_hostfile");
+    assert!(
+        embers[0].reason.contains("no transcript activity"),
+        "{}",
+        embers[0].reason
+    );
+}
+
+#[test]
+fn claude_cli_using_cpu_is_not_idle() {
+    let mut fx = load("claude_cli_no_hostfile");
+    let p = fx.cur.procs.iter_mut().find(|p| p.pid == 702).unwrap();
+    p.cpu_time_ms += 15_000; // 5 % of a 5-minute window
+    assert!(run(&fx).is_empty());
+}
+
+#[test]
+fn orphan_http_server_redacts_secret_in_hint() {
+    let embers = check("orphan_http_server");
+    let hint = embers[0].recovery_hint.clone().unwrap();
+    assert!(hint.contains("http.server 8765"), "{hint}");
+    assert!(!hint.contains("sk-"), "{hint}");
+    assert!(embers[0].reason.contains("parent gone") && embers[0].reason.contains(":8765"));
+}
+
+#[test]
+fn idle_vite_server() {
+    let embers = check("idle_vite_server");
+    assert!(
+        embers[0].reason.contains("session ended"),
+        "{}",
+        embers[0].reason
+    );
+}
+
+#[test]
+fn poll_loop_includes_its_sleep_child() {
+    let embers = check("poll_loop");
+    assert_eq!(embers[0].pids, vec![1400, 1401]);
+}
+
+#[test]
+fn runaway_system_app_is_inform_only() {
+    let embers = check("runaway_mirroring");
+    assert!(embers[0].reason.contains("30 GB"), "{}", embers[0].reason);
+    assert!(embers.iter().all(|e| e.action == Action::Inform));
+}
+
+#[test]
+fn protected_processes_never_actionable() {
+    let embers = check("protected_never");
+    assert_eq!(embers[0].protected, Some(ProtectReason::Frontmost));
+}
+
+#[test]
+fn windows_pid_reuse_orphan() {
+    check("windows_pid_reuse");
+}
+
+#[test]
+fn allowlisted_process_never_shown() {
+    let embers = check("allowlist");
+    assert!(embers
+        .iter()
+        .all(|e| e.root_pid != 1700 && !e.pids.contains(&1700)));
+}
+
+#[test]
+fn single_snapshot_never_judges_idleness() {
+    check("single_snapshot");
+}
+
+#[test]
+fn runaway_plain_processes_can_be_ended() {
+    let embers = check("runaway_plain_process");
+    let cpu = embers.iter().find(|e| e.root_pid == 1801).unwrap();
+    assert!(cpu.reason.contains("150 % CPU"), "{}", cpu.reason);
+}
+
+#[test]
+fn cpu_hog_needs_a_long_enough_window() {
+    let mut fx = load("runaway_plain_process");
+    let prev = fx.prev.as_mut().unwrap();
+    prev.taken_at_ms = fx.cur.taken_at_ms - 60_000; // 1 minute < hog_minutes
+    for p in &mut prev.procs {
+        if p.pid == 1801 {
+            p.cpu_time_ms = fx
+                .cur
+                .procs
+                .iter()
+                .find(|c| c.pid == 1801)
+                .unwrap()
+                .cpu_time_ms
+                - 90_000;
+        }
+    }
+    assert!(run(&fx).iter().all(|e| e.root_pid != 1801));
+}
+
+#[test]
+fn whole_fixture_directory_loads() {
+    let files = fixture::list(&path("")).unwrap();
+    assert_eq!(files.len(), 12);
+}
+
+#[test]
+fn classify_1000_processes_is_fast() {
+    let mut fx = load("claude_desktop_idle");
+    let template = fx.cur.procs[3].clone();
+    for i in 0..1000u32 {
+        let mut p = template.clone();
+        p.pid = 50_000 + i;
+        p.ppid = Some(if i == 0 { 1001 } else { 50_000 + i / 2 });
+        fx.cur.procs.push(p);
+    }
+    let cfg = fixture::config_for(&fx).unwrap();
+    let start = std::time::Instant::now();
+    let _ = classify(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts);
+    assert!(
+        start.elapsed().as_millis() < 50,
+        "took {:?}",
+        start.elapsed()
+    );
+}

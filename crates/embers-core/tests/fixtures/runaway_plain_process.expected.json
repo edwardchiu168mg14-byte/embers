@@ -1,0 +1,24 @@
+{
+  "embers": [
+    {
+      "root_pid": 1800,
+      "categories": [
+        "Runaway"
+      ],
+      "confidence": "High",
+      "action": "Terminate"
+    },
+    {
+      "root_pid": 1801,
+      "categories": [
+        "Runaway"
+      ],
+      "confidence": "High",
+      "action": "Terminate"
+    }
+  ],
+  "protected_pids": [
+    1,
+    701
+  ]
+}
