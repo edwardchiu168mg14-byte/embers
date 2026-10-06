@@ -1,0 +1,117 @@
+{
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "cpu_time_ms": 1000,
+        "is_system_path": true
+      },
+      {
+        "pid": 100,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/opt/claude/claude",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "/opt/claude/claude"
+        ],
+        "pgid": 100
+      },
+      {
+        "pid": 301,
+        "ppid": 100,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/Applications/Foo.app/Contents/MacOS/Foo",
+        "cpu_time_ms": 1000,
+        "pgid": 301,
+        "is_app_bundle": true
+      },
+      {
+        "pid": 302,
+        "ppid": 301,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/usr/bin/node",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "node",
+          "y"
+        ],
+        "pgid": 301
+      }
+    ],
+    "current_uid": 501,
+    "frontmost_pid": 301
+  },
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "cpu_time_ms": 1000,
+        "is_system_path": true
+      },
+      {
+        "pid": 100,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/opt/claude/claude",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "/opt/claude/claude"
+        ],
+        "pgid": 100
+      },
+      {
+        "pid": 301,
+        "ppid": 100,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/Applications/Foo.app/Contents/MacOS/Foo",
+        "cpu_time_ms": 1000,
+        "pgid": 301,
+        "is_app_bundle": true
+      },
+      {
+        "pid": 302,
+        "ppid": 301,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/usr/bin/node",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "node",
+          "y"
+        ],
+        "pgid": 301
+      }
+    ],
+    "current_uid": 501,
+    "frontmost_pid": 301
+  },
+  "hosts": {
+    "sessions": [
+      {
+        "pid": 100,
+        "status": "Idle",
+        "status_since_ms": 1799992800000,
+        "session_id": "abc",
+        "cwd": "/work"
+      }
+    ]
+  }
+}

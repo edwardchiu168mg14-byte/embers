@@ -1,0 +1,103 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1700,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "python3",
+          "-m",
+          "http.server",
+          "9999"
+        ],
+        "listeners": [
+          9999
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1701,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "python3",
+          "-m",
+          "http.server",
+          "8080"
+        ],
+        "listeners": [
+          8080
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1700,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "python3",
+          "-m",
+          "http.server",
+          "9999"
+        ],
+        "listeners": [
+          9999
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1701,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "python3",
+          "-m",
+          "http.server",
+          "8080"
+        ],
+        "listeners": [
+          8080
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "config": "[[allowlist]]\nlabel = \"docs server\"\npattern = 'http\\.server 9999'\n"
+}

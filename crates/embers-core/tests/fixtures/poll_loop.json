@@ -1,0 +1,72 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1400,
+        "ppid": null,
+        "start_time_ms": 1799997000000,
+        "uid": 501,
+        "exe": "/bin/bash",
+        "argv": [
+          "/bin/bash",
+          "-c",
+          "until curl -s localhost:3000; do sleep 30; done"
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1400,
+        "ppid": null,
+        "start_time_ms": 1799997000000,
+        "uid": 501,
+        "exe": "/bin/bash",
+        "argv": [
+          "/bin/bash",
+          "-c",
+          "until curl -s localhost:3000; do sleep 30; done"
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1401,
+        "ppid": 1400,
+        "start_time_ms": 1799999990000,
+        "uid": 501,
+        "exe": "/bin/sleep",
+        "argv": [
+          "sleep",
+          "30"
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  }
+}

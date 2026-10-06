@@ -1,0 +1,116 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Windows",
+    "procs": [
+      {
+        "pid": 4,
+        "ppid": null,
+        "start_time_ms": 1797408000000,
+        "uid": 18,
+        "exe": "System",
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2002,
+        "ppid": null,
+        "start_time_ms": 1799971200000,
+        "uid": 1000,
+        "exe": "C:\\Windows\\explorer.exe",
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2000,
+        "ppid": null,
+        "start_time_ms": 1799999100000,
+        "uid": 1000,
+        "exe": "C:\\Program Files\\Python312\\python.exe",
+        "argv": [
+          "python.exe",
+          "-m",
+          "http.server",
+          "8000"
+        ],
+        "listeners": [
+          8000
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2001,
+        "ppid": 2002,
+        "start_time_ms": 1799999100000,
+        "uid": 1000,
+        "exe": "C:\\Program Files\\Python312\\python.exe",
+        "argv": [
+          "python.exe",
+          "-m",
+          "http.server",
+          "8001"
+        ],
+        "listeners": [
+          8001
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 1000
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Windows",
+    "procs": [
+      {
+        "pid": 4,
+        "ppid": null,
+        "start_time_ms": 1797408000000,
+        "uid": 18,
+        "exe": "System",
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2002,
+        "ppid": null,
+        "start_time_ms": 1799971200000,
+        "uid": 1000,
+        "exe": "C:\\Windows\\explorer.exe",
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2000,
+        "ppid": null,
+        "start_time_ms": 1799999100000,
+        "uid": 1000,
+        "exe": "C:\\Program Files\\Python312\\python.exe",
+        "argv": [
+          "python.exe",
+          "-m",
+          "http.server",
+          "8000"
+        ],
+        "listeners": [
+          8000
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 2001,
+        "ppid": 2002,
+        "start_time_ms": 1799999100000,
+        "uid": 1000,
+        "exe": "C:\\Program Files\\Python312\\python.exe",
+        "argv": [
+          "python.exe",
+          "-m",
+          "http.server",
+          "8001"
+        ],
+        "listeners": [
+          8001
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 1000
+  }
+}

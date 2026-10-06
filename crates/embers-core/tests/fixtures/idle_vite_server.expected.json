@@ -1,0 +1,15 @@
+{
+  "embers": [
+    {
+      "root_pid": 1301,
+      "categories": [
+        "IdleServer"
+      ],
+      "confidence": "Medium",
+      "action": "Terminate"
+    }
+  ],
+  "protected_pids": [
+    1
+  ]
+}
