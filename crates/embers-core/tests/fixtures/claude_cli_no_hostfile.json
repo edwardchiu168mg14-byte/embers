@@ -1,0 +1,114 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 700,
+        "ppid": 1,
+        "start_time_ms": 1799967600000,
+        "uid": 501,
+        "exe": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
+        "is_app_bundle": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 701,
+        "ppid": 700,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "-zsh"
+        ],
+        "pgid": 701,
+        "has_tty": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 702,
+        "ppid": 701,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/claude/bin/claude",
+        "argv": [
+          "claude"
+        ],
+        "pgid": 702,
+        "has_tty": true,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 700,
+        "ppid": 1,
+        "start_time_ms": 1799967600000,
+        "uid": 501,
+        "exe": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
+        "is_app_bundle": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 701,
+        "ppid": 700,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "-zsh"
+        ],
+        "pgid": 701,
+        "has_tty": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 702,
+        "ppid": 701,
+        "start_time_ms": 1799989200000,
+        "uid": 501,
+        "exe": "/opt/claude/bin/claude",
+        "argv": [
+          "claude"
+        ],
+        "pgid": 702,
+        "has_tty": true,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "hosts": {
+    "sessions": [
+      {
+        "pid": 702,
+        "last_transcript_write_ms": 1799989200000,
+        "session_id": "sess-2222",
+        "cwd": "/tmp/project-b"
+      }
+    ]
+  }
+}

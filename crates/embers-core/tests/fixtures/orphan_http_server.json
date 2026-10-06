@@ -1,0 +1,72 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1200,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "http.server",
+          "8765",
+          "--api-key",
+          "sk-test-0123456789abcdef"
+        ],
+        "listeners": [
+          8765
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1200,
+        "ppid": null,
+        "start_time_ms": 1799998800000,
+        "uid": 501,
+        "exe": "/usr/bin/python3",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "http.server",
+          "8765",
+          "--api-key",
+          "sk-test-0123456789abcdef"
+        ],
+        "listeners": [
+          8765
+        ],
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  }
+}

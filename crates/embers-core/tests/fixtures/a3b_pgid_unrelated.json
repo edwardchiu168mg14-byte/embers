@@ -1,0 +1,93 @@
+{
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "cpu_time_ms": 1000,
+        "is_system_path": true
+      },
+      {
+        "pid": 100,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/opt/claude/claude",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "/opt/claude/claude"
+        ],
+        "pgid": 100
+      },
+      {
+        "pid": 300,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/usr/bin/vim",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "vim"
+        ],
+        "pgid": 100
+      }
+    ],
+    "current_uid": 501
+  },
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "cpu_time_ms": 1000,
+        "is_system_path": true
+      },
+      {
+        "pid": 100,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/opt/claude/claude",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "/opt/claude/claude"
+        ],
+        "pgid": 100
+      },
+      {
+        "pid": 300,
+        "ppid": 1,
+        "start_time_ms": 1799982000000,
+        "uid": 501,
+        "exe": "/usr/bin/vim",
+        "cpu_time_ms": 1000,
+        "argv": [
+          "vim"
+        ],
+        "pgid": 100
+      }
+    ],
+    "current_uid": 501
+  },
+  "hosts": {
+    "sessions": [
+      {
+        "pid": 100,
+        "status": "Idle",
+        "status_since_ms": 1799992800000,
+        "session_id": "abc",
+        "cwd": "/work"
+      }
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+# Embers defaults. Users override any top-level key in their own config.toml
+# (a key given by the user replaces the default value entirely).
+
+idle_minutes = 30
+window_minutes = 5
+# Front-ends replace this with max(8 GiB, 50 % of physical RAM).
+hog_memory_bytes = 8589934592
+hog_cpu_pct = 100.0
+hog_minutes = 10
+
+# Regexes matched against the command line (or exe path when argv is empty).
+dev_tool_patterns = [
+  '(?i)\bpython[0-9.]*(\.exe)?\b.*\s-m\s+(http\.server|SimpleHTTPServer)\b',
+  '(?i)\b(uvicorn|gunicorn|hypercorn|flask|vite|webpack|esbuild|next|nuxt|astro|parcel|http-server|live-server|serve|ngrok|gcloud)\b',
+  '(?i)\b(npm|pnpm|yarn|bun)\b.*\b(run|exec|dev|start)\b',
+  '(?i)\bnpx\b',
+  '(?i)\b(chrome|chromium|msedge)\b.*--headless',
+]
+
+# How a process is attributed to the tool that started it. First match wins for a
+# given process; attribution walks from the process up through its ancestors.
+# `session_root = true` marks the process that *is* an AI session (idle-session rule).
+[[origins]]
+origin = "ClaudeDesktop"
+exe = '(?i)Claude\.app/Contents/Helpers/disclaimer$'
+
+[[origins]]
+origin = "ClaudeDesktop"
+exe = '(?i)(^|[/\\])claude(\.exe)?$'
+argv = 'stream-json'
+session_root = true
+
+[[origins]]
+origin = "ClaudeCli"
+exe = '(?i)(^|[/\\])claude(\.exe)?$'
+session_root = true
+
+[[origins]]
+origin = "ClaudeCli"
+argv = '@anthropic-ai[/\\]claude-code[/\\]cli\.js'
+session_root = true
+
+[[origins]]
+origin = "CodexApp"
+exe = '(?i)(ChatGPT|Codex)\.app/'
+
+[[origins]]
+origin = "CodexCli"
+exe = '(?i)(^|[/\\])codex(\.exe)?$'
+session_root = true
+
+[[origins]]
+origin = "Terminal"
+exe = '(?i)(Terminal\.app|iTerm\.app|Ghostty\.app|WezTerm|Alacritty|kitty|WindowsTerminal\.exe|conhost\.exe)'
+
+# Protected processes are never offered for ending, and nothing below them is ended as
+# part of another ember. Children of the OS processes listed here and of interactive
+# shells are NOT protected themselves (everything descends from them); children of the
+# frontmost app, a busy session, another user's process, Embers, or an allow-listed
+# process are. See crates/embers-core/src/protect.rs.
+[protected]
+# Matched case-insensitively against the executable name.
+names_macos = ["kernel_task", "launchd", "WindowServer", "loginwindow", "Finder", "Dock", "SystemUIServer", "coreaudiod", "ControlCenter"]
+names_windows = ["System", "Registry", "smss.exe", "csrss.exe", "wininit.exe", "winlogon.exe", "services.exe", "lsass.exe", "svchost.exe", "explorer.exe", "dwm.exe", "fontdrvhost.exe", "MsMpEng.exe"]
+names_linux = ["systemd", "init", "kthreadd", "Xorg", "Xwayland", "gnome-shell", "kwin_wayland"]
+# Matched case-insensitively as a prefix of the executable path.
+path_prefixes_macos = ["/System/Library/", "/usr/libexec/", "/usr/sbin/", "/sbin/", "/Library/Apple/"]
+path_prefixes_windows = ['C:\Windows\System32\', 'C:\Windows\SysWOW64\']
+path_prefixes_linux = ["/usr/lib/systemd/", "/lib/systemd/", "/usr/sbin/", "/sbin/"]
+# Shell names: a shell attached to a live terminal is never touched; also used to
+# recognise polling loops. Setting `shells` in your config REPLACES this list (it does
+# not add to it) — copy these entries if you only want to add one.
+shells = ["bash", "zsh", "sh", "dash", "fish", "tcsh", "ksh", "pwsh", "pwsh.exe", "powershell.exe", "cmd.exe", "bash.exe"]

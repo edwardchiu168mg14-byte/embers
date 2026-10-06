@@ -1,0 +1,57 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true
+      },
+      {
+        "pid": 1900,
+        "ppid": null,
+        "start_time_ms": 1799996400000,
+        "uid": 501,
+        "exe": "/opt/ml/bin/trainer",
+        "argv": [
+          "trainer",
+          "--big"
+        ],
+        "footprint_bytes": 21474836480
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true
+      },
+      {
+        "pid": 1900,
+        "ppid": null,
+        "start_time_ms": 1799996400000,
+        "uid": 501,
+        "exe": "/opt/ml/bin/trainer",
+        "argv": [
+          "trainer",
+          "--big"
+        ],
+        "footprint_bytes": 21474836480
+      }
+    ],
+    "current_uid": 501
+  },
+  "config": "[[allowlist]]\nlabel = \"my trainer\"\npattern = 'trainer --big'\n"
+}

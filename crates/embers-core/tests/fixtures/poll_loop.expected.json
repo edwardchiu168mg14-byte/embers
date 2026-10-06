@@ -1,0 +1,19 @@
+{
+  "embers": [
+    {
+      "root_pid": 1400,
+      "categories": [
+        "Loop"
+      ],
+      "confidence": "Medium",
+      "action": "Terminate",
+      "pids": [
+        1400,
+        1401
+      ]
+    }
+  ],
+  "protected_pids": [
+    1
+  ]
+}

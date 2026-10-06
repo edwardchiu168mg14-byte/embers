@@ -1,6 +1,18 @@
 //! Embers core: scans processes, classifies leftovers, and ends them on request.
-//!
-//! Phase 0 skeleton — no detection logic yet.
+#![forbid(unsafe_code)]
+
+pub mod config;
+pub mod fixture;
+pub mod model;
+pub mod origin;
+pub mod protect;
+pub mod reason;
+pub mod redact;
+pub mod rules;
+
+pub use config::{load_defaults, merge, Config, ConfigError};
+pub use model::*;
+pub use rules::classify;
 
 /// Version of the core library, taken from the workspace manifest.
 pub fn version() -> &'static str {

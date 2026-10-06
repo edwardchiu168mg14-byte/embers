@@ -1,0 +1,92 @@
+{
+  "prev": {
+    "taken_at_ms": 1799999700000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1300,
+        "ppid": null,
+        "start_time_ms": 1799992800000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "/bin/zsh"
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1301,
+        "ppid": 1300,
+        "start_time_ms": 1799997600000,
+        "uid": 501,
+        "exe": "/opt/node/bin/node",
+        "argv": [
+          "node",
+          "/tmp/project-c/node_modules/.bin/vite",
+          "--port",
+          "5173"
+        ],
+        "listeners": [
+          5173
+        ],
+        "established": 0,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  },
+  "cur": {
+    "taken_at_ms": 1800000000000,
+    "os": "Macos",
+    "procs": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_time_ms": 1797408000000,
+        "uid": 501,
+        "exe": "/sbin/launchd",
+        "is_system_path": true,
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1300,
+        "ppid": null,
+        "start_time_ms": 1799992800000,
+        "uid": 501,
+        "exe": "/bin/zsh",
+        "argv": [
+          "/bin/zsh"
+        ],
+        "cpu_time_ms": 1000
+      },
+      {
+        "pid": 1301,
+        "ppid": 1300,
+        "start_time_ms": 1799997600000,
+        "uid": 501,
+        "exe": "/opt/node/bin/node",
+        "argv": [
+          "node",
+          "/tmp/project-c/node_modules/.bin/vite",
+          "--port",
+          "5173"
+        ],
+        "listeners": [
+          5173
+        ],
+        "established": 0,
+        "cpu_time_ms": 1000
+      }
+    ],
+    "current_uid": 501
+  }
+}

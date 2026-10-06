@@ -1,0 +1,19 @@
+{
+  "embers": [
+    {
+      "root_pid": 700,
+      "categories": [
+        "Orphan",
+        "IdleServer"
+      ],
+      "confidence": "High",
+      "action": "Inform",
+      "pids": [
+        700
+      ]
+    }
+  ],
+  "protected_pids": [
+    1
+  ]
+}

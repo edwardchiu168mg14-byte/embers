@@ -1,0 +1,21 @@
+{
+  "embers": [
+    {
+      "root_pid": 900,
+      "categories": [
+        "Runaway"
+      ],
+      "confidence": "High",
+      "action": "Inform",
+      "pids": [
+        900
+      ]
+    }
+  ],
+  "protected_pids": [
+    100,
+    101,
+    170,
+    900
+  ]
+}
