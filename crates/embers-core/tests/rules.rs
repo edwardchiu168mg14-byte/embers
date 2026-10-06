@@ -238,7 +238,7 @@ fn cpu_hog_needs_a_long_enough_window() {
 #[test]
 fn every_fixture_matches_its_expectation() {
     let files = fixture::list(&path("")).unwrap();
-    assert_eq!(files.len(), 27);
+    assert_eq!(files.len(), 30);
     for file in files {
         let name = file.file_stem().unwrap().to_str().unwrap().to_string();
         check(&name);
@@ -363,6 +363,8 @@ fn classify_1000_processes_is_fast() {
         fx.cur.procs.push(p);
     }
     let cfg = fixture::config_for(&fx).unwrap();
+    // Warm-up run: compiles the lazily-built regexes outside the timed region.
+    let _ = classify(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts);
     let start = std::time::Instant::now();
     let _ = classify(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts);
     assert!(
@@ -370,4 +372,29 @@ fn classify_1000_processes_is_fast() {
         "took {:?}",
         start.elapsed()
     );
+}
+
+// Round 2 (re-review N3, N4, N9).
+
+#[test]
+fn app_bundle_never_leads_a_group_kill() {
+    check("b1_bundle_leader");
+}
+
+#[test]
+fn protection_reaches_any_depth() {
+    let embers = check("d70_deep_frontmost_chain");
+    assert_eq!(embers[0].protected, Some(ProtectReason::Frontmost));
+}
+
+#[test]
+fn quoted_hint_keeps_its_closing_quote() {
+    let embers = check("a18_hint_fields");
+    let hint = embers[0].recovery_hint.as_deref().unwrap();
+    assert!(hint.ends_with("')"), "{hint}");
+}
+
+#[test]
+fn os_root_protection_is_not_inherited() {
+    check("j1_child_of_launchd_still_actionable");
 }

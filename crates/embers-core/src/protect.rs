@@ -1,4 +1,17 @@
 //! Processes Embers must never offer to end (rule S11). Checked before any rule runs.
+//!
+//! Protection and descendants (tech-lead decision, phase 1a round 1):
+//!
+//! | Reason | Walks stop here | Descendants inherit it |
+//! |---|---|---|
+//! | `Frontmost`, `BusySession`, `NotOwned`, `SelfProcess`, `Allowlisted` | yes | yes |
+//! | `Kernel`, `SystemDaemon`, `LiveTty` | yes | no |
+//!
+//! "Walks stop here" means no ember's `pids` ever reach into or below the process.
+//! Inheriting means a descendant is itself protected and cannot be an actionable root.
+//! OS roots and interactive shells do not pass protection down: every process descends
+//! from launchd/explorer/systemd, and a runaway job in the user's own terminal must stay
+//! endable.
 
 use crate::config::Config;
 use crate::model::{Proc, ProtectReason, SessionStatus};

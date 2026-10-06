@@ -182,3 +182,25 @@ fn port_numbers_are_not_secrets() {
     );
     assert_eq!(redact_argv(&v(&["mysql", "-p", "hunter2"]))[2], "***");
 }
+
+// Round 2 (re-review N2, N8).
+
+#[test]
+fn url_passwords_with_empty_user_or_reserved_chars_are_masked() {
+    assert_masked(&[
+        v(&["node", "w.js", "--redis", "redis://:SECRET_R@cache:6379/0"]),
+        v(&["env", "REDIS_URL=redis://:SECRET_S@cache:6379", "node"]),
+        v(&["psql", "postgres://u:pa/SECRET_T@h/db"]),
+        v(&["psql", "postgres://u:p@SECRET_U@h/db"]),
+    ]);
+    assert_eq!(
+        redact_argv(&v(&["x", "redis://:pw@cache:6379/0"]))[1],
+        "redis://:***@cache:6379/0"
+    );
+}
+
+#[test]
+fn invisible_characters_cannot_hide_a_secret_flag() {
+    let out = redact_argv(&v(&["srv", "--to\u{200b}ken", "SECRET_V"]));
+    assert!(!out.join(" ").contains("SECRET"), "{out:?}");
+}

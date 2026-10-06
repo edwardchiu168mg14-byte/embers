@@ -76,6 +76,9 @@ fn scan_fixtures(
         if let Some(toml) = &user_toml {
             cfg = config::merge(cfg, toml)?;
         }
+        for warning in &cfg.warnings {
+            eprintln!("embers: warning: {}", plain(warning));
+        }
         let embers = classify(fx.prev.as_ref(), &fx.cur, &cfg, &fx.hosts);
         if json {
             for ember in &embers {

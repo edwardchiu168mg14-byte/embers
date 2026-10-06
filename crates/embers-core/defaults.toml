@@ -53,6 +53,11 @@ session_root = true
 origin = "Terminal"
 exe = '(?i)(Terminal\.app|iTerm\.app|Ghostty\.app|WezTerm|Alacritty|kitty|WindowsTerminal\.exe|conhost\.exe)'
 
+# Protected processes are never offered for ending, and nothing below them is ended as
+# part of another ember. Children of the OS processes listed here and of interactive
+# shells are NOT protected themselves (everything descends from them); children of the
+# frontmost app, a busy session, another user's process, Embers, or an allow-listed
+# process are. See crates/embers-core/src/protect.rs.
 [protected]
 # Matched case-insensitively against the executable name.
 names_macos = ["kernel_task", "launchd", "WindowServer", "loginwindow", "Finder", "Dock", "SystemUIServer", "coreaudiod", "ControlCenter"]

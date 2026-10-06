@@ -40,7 +40,9 @@ fn authorization() -> &'static Regex {
 fn url_userinfo() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     re(&RE, || {
-        r#"(?i)\b([a-z][a-z0-9+.-]*://)([^\s/@:'"]+)(:[^\s/@'"]*)?@"#.into()
+        // Empty user allowed (`redis://:pw@host`); the password runs to the last `@`, so
+        // passwords containing `/` or `@` are masked whole.
+        r#"(?i)\b([a-z][a-z0-9+.-]*://)([^\s/@:'"]*)(:[^\s'"]*)?@"#.into()
     })
 }
 
@@ -132,6 +134,8 @@ pub fn redact_argv(argv: &[String]) -> Vec<String> {
     let mut out = Vec::with_capacity(argv.len());
     let mut next = Next::Keep;
     for arg in argv {
+        // Invisible characters must not hide a flag name from the checks below.
+        let arg: &String = &arg.chars().filter(|c| !is_invisible(*c)).collect();
         let shown = match next {
             Next::Mask => MASK.to_string(),
             Next::MaskUnlessPort if !is_port(arg) => MASK.to_string(),

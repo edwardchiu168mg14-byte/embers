@@ -131,23 +131,20 @@ impl<'a> Context<'a> {
             )
         };
         let mut out = self.protected.clone();
-        for p in &self.cur.procs {
-            if out.contains_key(&p.pid) {
-                continue;
-            }
-            let mut cur = p.ppid.filter(|pp| *pp != p.pid);
-            for _ in 0..MAX_DEPTH {
-                let Some(parent) = cur.and_then(|pp| self.procs.get(&pp)) else {
-                    break;
-                };
-                if parent.pid == p.pid {
-                    break;
+        // Walk down from every inheritable protected process (no depth limit, so a deep
+        // chain cannot escape its ancestor's protection; `out` doubles as the visited set).
+        let mut queue: VecDeque<(Pid, ProtectReason)> = self
+            .protected
+            .iter()
+            .filter(|(_, r)| inheritable(r))
+            .map(|(pid, r)| (*pid, r.clone()))
+            .collect();
+        while let Some((pid, reason)) = queue.pop_front() {
+            for child in self.children.get(&pid).into_iter().flatten() {
+                if !out.contains_key(child) {
+                    out.insert(*child, reason.clone());
+                    queue.push_back((*child, reason.clone()));
                 }
-                if let Some(reason) = self.protected.get(&parent.pid).filter(|r| inheritable(r)) {
-                    out.insert(p.pid, reason.clone());
-                    break;
-                }
-                cur = parent.ppid.filter(|pp| *pp != parent.pid);
             }
         }
         out
@@ -346,9 +343,13 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
             let system_note = p.is_system_path.then(|| {
                 "part of the system — Embers will not end it, quit it yourself".to_string()
             });
+            let mut ordered: Vec<&Hit> = group.iter().collect();
+            if p.is_system_path {
+                ordered.sort_by_key(|h| h.category != Category::Runaway);
+            }
             let facts: Vec<String> = system_note
                 .into_iter()
-                .chain(group.iter().flat_map(|h| h.facts.iter().cloned()))
+                .chain(ordered.iter().flat_map(|h| h.facts.iter().cloned()))
                 .collect();
             let mut listeners: Vec<u16> = pids
                 .iter()
@@ -395,7 +396,7 @@ fn merge(ctx: &Context, hits: Vec<Hit>) -> Vec<Ember> {
                 recovery_hint: group
                     .iter()
                     .find_map(|h| h.hint.as_deref())
-                    .map(|h| cap_field(&redact_text(h), MAX_FIELD_BYTES)),
+                    .map(|h| cap_field(h, MAX_FIELD_BYTES)),
                 pids,
                 protected,
             })
